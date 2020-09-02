@@ -63,9 +63,6 @@ public class Steganography {
         if (addition.length + offset > (imageBytes.length / 8)) {
             throw new IllegalArgumentException("File not long enough!");
         }
-        System.out.println("Bajtovi slike: " + imageBytes.length);
-        System.out.println("Bajtovi teksta: " + addition.length);
-        System.out.println("Odnos: " + (imageBytes.length / addition.length));
         for (int i = 0; i < addition.length; ++i) {
             int add = addition[i];
             for (int bit = 7; bit >= 0; --bit, ++offset) {
@@ -117,11 +114,10 @@ public class Steganography {
         int isCompressed = 0;
         byte[] imageBytes = this.getBufferedImageRasterBytes(image);
         byte[] textBytes = text.getBytes();
-        if((textBytes.length + 64) > (imageBytes.length / 8)){
+        if((textBytes.length + 40) > (imageBytes.length / 8)){
             isCompressed = 1;
             textBytes = this.compress(textBytes);
         }
-//        byte[] ziped = ByteBuffer.allocate(4).putInt(isCompressed).array();
         byte[] ziped = ByteBuffer.allocate(1).put((byte)isCompressed).array();
         byte[] length = ByteBuffer.allocate(4).putInt(textBytes.length).array();
         this.hideBytes(imageBytes, length, 0);
@@ -177,8 +173,6 @@ public class Steganography {
         }
         outputStream.close();
         byte[] output = outputStream.toByteArray();
-        System.out.println("Original: " + data.length + " b");
-        System.out.println("Compressed: " + output.length + " b");
         return output;
     }
     
@@ -201,8 +195,6 @@ public class Steganography {
         }
         outputStream.close();
         byte[] output = outputStream.toByteArray();
-        System.out.println("Original: " + data.length);
-        System.out.println("Decompressed: " + output.length);
         return output;
     }
     
