@@ -30,13 +30,13 @@ public class Steganography {
      */
     private String getHiddenText(byte[] imageBytes) throws IOException, DataFormatException {
         int textLength = 0;
-        int offset  = 64;
-        int isCompressed = 0;
+        int offset  = 40;
+        byte isCompressed = 0;
         for (int i = 0; i < 32; ++i) {
             textLength = (textLength << 1) | (imageBytes[i] & 1);
         }
-        for (int i = 32; i < 64; ++i) {
-            isCompressed = (isCompressed << 1) | (imageBytes[i] & 1);
+        for (int i = 32; i < 40; ++i) {
+            isCompressed = (byte) ((isCompressed << 1) | (imageBytes[i] & 1));
         }
         byte[] result = new byte[textLength];
         for (int y = 0; y < textLength; ++y) {
@@ -121,11 +121,12 @@ public class Steganography {
             isCompressed = 1;
             textBytes = this.compress(textBytes);
         }
-        byte[] ziped = ByteBuffer.allocate(4).putInt(isCompressed).array();
+//        byte[] ziped = ByteBuffer.allocate(4).putInt(isCompressed).array();
+        byte[] ziped = ByteBuffer.allocate(1).put((byte)isCompressed).array();
         byte[] length = ByteBuffer.allocate(4).putInt(textBytes.length).array();
         this.hideBytes(imageBytes, length, 0);
         this.hideBytes(imageBytes, ziped, 32);
-        this.hideBytes(imageBytes, textBytes, 64);
+        this.hideBytes(imageBytes, textBytes, 40);
         return image;
     }
     
