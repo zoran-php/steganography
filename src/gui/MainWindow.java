@@ -119,8 +119,8 @@ public class MainWindow extends javax.swing.JFrame {
         setTitle("Steganography");
         setIconImage(new ImageIcon(getClass().getResource("/img/favicon.png")).getImage());
         setMaximumSize(new java.awt.Dimension(6000, 4000));
-        setMinimumSize(new java.awt.Dimension(500, 400));
-        setPreferredSize(new java.awt.Dimension(500, 400));
+        setMinimumSize(new java.awt.Dimension(600, 400));
+        setPreferredSize(new java.awt.Dimension(600, 400));
 
         panel_controls.setLayout(new java.awt.GridLayout(2, 1, 10, 0));
 
@@ -163,9 +163,9 @@ public class MainWindow extends javax.swing.JFrame {
         btn_retrieve.setText("Retrieve Text");
         btn_retrieve.setFocusable(false);
         btn_retrieve.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btn_retrieve.setMaximumSize(new java.awt.Dimension(90, 30));
-        btn_retrieve.setMinimumSize(new java.awt.Dimension(90, 30));
-        btn_retrieve.setPreferredSize(new java.awt.Dimension(90, 30));
+        btn_retrieve.setMaximumSize(new java.awt.Dimension(150, 30));
+        btn_retrieve.setMinimumSize(new java.awt.Dimension(150, 30));
+        btn_retrieve.setPreferredSize(new java.awt.Dimension(150, 30));
         btn_retrieve.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btn_retrieve.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -229,13 +229,15 @@ public class MainWindow extends javax.swing.JFrame {
             jfc.setSelectedFile(new File("hidden.png"));
             int r = jfc.showSaveDialog(this);
             if (r == JFileChooser.APPROVE_OPTION) {
-                File out = jfc.getSelectedFile();
-                try {
-                    s.hideText(in, out, txtArea.getText());
-                    JOptionPane.showMessageDialog(this, "Success!");
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage());
-                }
+                new Thread(() -> {
+                    File out = jfc.getSelectedFile();
+                    try {
+                        s.hideText(in, out, txtArea.getText());
+                        JOptionPane.showMessageDialog(this, "Success!");
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(this, ex.getMessage());
+                    }
+                }).start();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Please choose image and type some text!");
@@ -244,14 +246,16 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void btn_retrieveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_retrieveActionPerformed
         if (this.in != null) {
-            try {
-                String retrieved = this.s.retrieveText(this.in);
-                this.txtArea.setText(retrieved);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
-            } catch (DataFormatException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            new Thread(() -> {
+                try {
+                    String retrieved = this.s.retrieveText(this.in);
+                    this.txtArea.setText(retrieved);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                } catch (DataFormatException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }).start();
         } else {
             JOptionPane.showMessageDialog(this, "Please choose image!");
         }
@@ -270,7 +274,7 @@ public class MainWindow extends javax.swing.JFrame {
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Windows".equals(info.getName())) {
+                if ("GTK+".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
