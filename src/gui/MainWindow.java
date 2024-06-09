@@ -8,6 +8,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.ItemEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -20,6 +21,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /**
  *
@@ -104,16 +106,19 @@ public class MainWindow extends javax.swing.JFrame {
 
         panel_controls = new javax.swing.JPanel();
         toolbar = new javax.swing.JToolBar();
-        btn_chooseFile = new javax.swing.JButton();
-        label_filesize = new javax.swing.JLabel();
-        btn_hide = new javax.swing.JButton();
-        btn_retrieve = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
-        btn_clear = new javax.swing.JButton();
+        useEncryption = new javax.swing.JCheckBox();
+        passwordField = new javax.swing.JPasswordField();
         tf_imagePath = new javax.swing.JTextField();
         scroll = new javax.swing.JScrollPane();
         txtArea = new javax.swing.JTextArea();
         panel_progress = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        btn_chooseFile = new javax.swing.JButton();
+        label_filesize = new javax.swing.JLabel();
+        btn_hide = new javax.swing.JButton();
+        btn_retrieve = new javax.swing.JButton();
+        btn_clear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Steganography");
@@ -124,74 +129,38 @@ public class MainWindow extends javax.swing.JFrame {
 
         panel_controls.setLayout(new java.awt.GridLayout(2, 1, 10, 0));
 
-        toolbar.setFloatable(false);
-
-        btn_chooseFile.setText("Choose File");
-        btn_chooseFile.setFocusable(false);
-        btn_chooseFile.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btn_chooseFile.setMaximumSize(new java.awt.Dimension(100, 30));
-        btn_chooseFile.setMinimumSize(new java.awt.Dimension(100, 30));
-        btn_chooseFile.setPreferredSize(new java.awt.Dimension(100, 30));
-        btn_chooseFile.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btn_chooseFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_chooseFileActionPerformed(evt);
-            }
-        });
-        toolbar.add(btn_chooseFile);
-
-        label_filesize.setText("  or drop file HERE");
-        label_filesize.setMaximumSize(new java.awt.Dimension(150, 30));
-        label_filesize.setMinimumSize(new java.awt.Dimension(150, 30));
-        label_filesize.setPreferredSize(new java.awt.Dimension(150, 30));
-        toolbar.add(label_filesize);
-
-        btn_hide.setText("Hide Text");
-        btn_hide.setFocusable(false);
-        btn_hide.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btn_hide.setMaximumSize(new java.awt.Dimension(90, 30));
-        btn_hide.setMinimumSize(new java.awt.Dimension(90, 30));
-        btn_hide.setPreferredSize(new java.awt.Dimension(90, 30));
-        btn_hide.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btn_hide.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_hideActionPerformed(evt);
-            }
-        });
-        toolbar.add(btn_hide);
-
-        btn_retrieve.setText("Retrieve Text");
-        btn_retrieve.setFocusable(false);
-        btn_retrieve.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btn_retrieve.setMaximumSize(new java.awt.Dimension(150, 30));
-        btn_retrieve.setMinimumSize(new java.awt.Dimension(150, 30));
-        btn_retrieve.setPreferredSize(new java.awt.Dimension(150, 30));
-        btn_retrieve.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btn_retrieve.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_retrieveActionPerformed(evt);
-            }
-        });
-        toolbar.add(btn_retrieve);
         toolbar.add(jSeparator1);
 
-        btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/clear.png"))); // NOI18N
-        btn_clear.setFocusable(false);
-        btn_clear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btn_clear.setMaximumSize(new java.awt.Dimension(45, 31));
-        btn_clear.setMinimumSize(new java.awt.Dimension(45, 31));
-        btn_clear.setPreferredSize(new java.awt.Dimension(45, 31));
-        btn_clear.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btn_clear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_clearActionPerformed(evt);
+        useEncryption.setText("Use encryption/decryption?");
+        useEncryption.setFocusable(false);
+        useEncryption.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        useEncryption.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        useEncryption.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                useEncryptionItemStateChanged(evt);
             }
         });
-        toolbar.add(btn_clear);
+        useEncryption.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                useEncryptionStateChanged(evt);
+            }
+        });
+        useEncryption.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                useEncryptionActionPerformed(evt);
+            }
+        });
+        toolbar.add(useEncryption);
+
+        passwordField.setEditable(false);
+        passwordField.setToolTipText("Enter password");
+        passwordField.setFocusable(false);
+        toolbar.add(passwordField);
 
         panel_controls.add(toolbar);
 
         tf_imagePath.setEditable(false);
+        tf_imagePath.setFocusable(false);
         tf_imagePath.setMinimumSize(new java.awt.Dimension(100, 30));
         tf_imagePath.setPreferredSize(new java.awt.Dimension(100, 30));
         panel_controls.add(tf_imagePath);
@@ -208,6 +177,71 @@ public class MainWindow extends javax.swing.JFrame {
 
         panel_progress.setLayout(new java.awt.GridLayout(1, 0));
         getContentPane().add(panel_progress, java.awt.BorderLayout.PAGE_END);
+
+        jPanel1.setMinimumSize(new java.awt.Dimension(200, 100));
+        jPanel1.setName(""); // NOI18N
+        jPanel1.setPreferredSize(new java.awt.Dimension(200, 100));
+        jPanel1.setLayout(new java.awt.GridLayout(10, 1));
+
+        btn_chooseFile.setText("Choose File");
+        btn_chooseFile.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btn_chooseFile.setMaximumSize(new java.awt.Dimension(100, 30));
+        btn_chooseFile.setMinimumSize(new java.awt.Dimension(100, 30));
+        btn_chooseFile.setPreferredSize(new java.awt.Dimension(100, 30));
+        btn_chooseFile.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btn_chooseFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_chooseFileActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_chooseFile);
+
+        label_filesize.setText("  or drop file HERE");
+        label_filesize.setMaximumSize(new java.awt.Dimension(150, 60));
+        label_filesize.setMinimumSize(new java.awt.Dimension(150, 60));
+        label_filesize.setPreferredSize(new java.awt.Dimension(150, 60));
+        jPanel1.add(label_filesize);
+
+        btn_hide.setText("Hide Text");
+        btn_hide.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btn_hide.setMaximumSize(new java.awt.Dimension(90, 30));
+        btn_hide.setMinimumSize(new java.awt.Dimension(90, 30));
+        btn_hide.setPreferredSize(new java.awt.Dimension(90, 30));
+        btn_hide.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btn_hide.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_hideActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_hide);
+
+        btn_retrieve.setText("Retrieve Text");
+        btn_retrieve.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btn_retrieve.setMaximumSize(new java.awt.Dimension(150, 30));
+        btn_retrieve.setMinimumSize(new java.awt.Dimension(150, 30));
+        btn_retrieve.setPreferredSize(new java.awt.Dimension(150, 30));
+        btn_retrieve.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btn_retrieve.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_retrieveActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_retrieve);
+
+        btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/clear.png"))); // NOI18N
+        btn_clear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btn_clear.setMaximumSize(new java.awt.Dimension(45, 31));
+        btn_clear.setMinimumSize(new java.awt.Dimension(45, 31));
+        btn_clear.setPreferredSize(new java.awt.Dimension(45, 31));
+        btn_clear.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btn_clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_clearActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_clear);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.WEST);
 
         pack();
         setLocationRelativeTo(null);
@@ -232,11 +266,13 @@ public class MainWindow extends javax.swing.JFrame {
                 new Thread(() -> {
                     File out = jfc.getSelectedFile();
                     try {
-                        s.hideText(in, out, txtArea.getText());
+                        s.hideText(in, out, txtArea.getText(), useEncryption.isSelected(), new String(passwordField.getPassword()));
                         JOptionPane.showMessageDialog(this, "Success!");
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(this, ex.getMessage());
-                    }
+                        JOptionPane.showMessageDialog(this, "Failed to hide the text!");
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(this, "Failed to hide the text!");
+                    } 
                 }).start();
             }
         } else {
@@ -248,16 +284,18 @@ public class MainWindow extends javax.swing.JFrame {
         if (this.in != null) {
             new Thread(() -> {
                 try {
-                    String retrieved = this.s.retrieveText(this.in);
+                    String retrieved = this.s.retrieveText(this.in, useEncryption.isSelected(), new String(passwordField.getPassword()));
                     this.txtArea.setText(retrieved);
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                    JOptionPane.showMessageDialog(this, "Unable to decrypt text!");
                 } catch (DataFormatException ex) {
-                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(this, "Unable to decrypt text!");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Unable to decrypt text!");
                 }
             }).start();
         } else {
-            JOptionPane.showMessageDialog(this, "Please choose image!");
+            JOptionPane.showMessageDialog(this, "Please choose an image!");
         }
     }//GEN-LAST:event_btn_retrieveActionPerformed
 
@@ -266,7 +304,30 @@ public class MainWindow extends javax.swing.JFrame {
         this.txtArea.setText("");
         this.tf_imagePath.setText("");
         this.label_filesize.setText("  or drop file HERE");
+        this.passwordField.setText("");
+        this.passwordField.setFocusable(false);
+        this.passwordField.setEditable(false);
+        this.useEncryption.setSelected(false);
     }//GEN-LAST:event_btn_clearActionPerformed
+
+    private void useEncryptionStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_useEncryptionStateChanged
+
+    }//GEN-LAST:event_useEncryptionStateChanged
+
+    private void useEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useEncryptionActionPerformed
+        
+    }//GEN-LAST:event_useEncryptionActionPerformed
+
+    private void useEncryptionItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_useEncryptionItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            this.passwordField.setFocusable(true);
+            this.passwordField.setEditable(true);
+        }else {
+            this.passwordField.setText("");
+            this.passwordField.setFocusable(false);
+            this.passwordField.setEditable(false);
+        }
+    }//GEN-LAST:event_useEncryptionItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -274,10 +335,11 @@ public class MainWindow extends javax.swing.JFrame {
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("GTK+".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+//                if ("Metal".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+                  javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -294,13 +356,16 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton btn_clear;
     private javax.swing.JButton btn_hide;
     private javax.swing.JButton btn_retrieve;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JLabel label_filesize;
     private javax.swing.JPanel panel_controls;
     private javax.swing.JPanel panel_progress;
+    private javax.swing.JPasswordField passwordField;
     private javax.swing.JScrollPane scroll;
     private javax.swing.JTextField tf_imagePath;
     private javax.swing.JToolBar toolbar;
     private javax.swing.JTextArea txtArea;
+    private javax.swing.JCheckBox useEncryption;
     // End of variables declaration//GEN-END:variables
 }

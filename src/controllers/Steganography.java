@@ -28,7 +28,7 @@ public class Steganography {
      * @throws IOException
      * @throws DataFormatException
      */
-    private String getHiddenText(byte[] imageBytes) throws IOException, DataFormatException {
+    private String getHiddenText(byte[] imageBytes, boolean useEncryption, String password) throws IOException, DataFormatException, Exception {
         int textLength = 0;
         int offset  = 40;
         byte isCompressed = 0;
@@ -43,6 +43,9 @@ public class Steganography {
             for (int z = 0; z < 8; ++z, ++offset) {
                 result[y] = (byte)((result[y] << 1) | (imageBytes[offset] & 1));
             }
+        }
+        if (useEncryption) {
+            result = Cryptography.decrypt(result, password);
         }
         if (isCompressed == 1) {
             result = this.decompress(result);
@@ -110,7 +113,7 @@ public class Steganography {
      * @return Image with hidden text in it
      * @throws IOException
      */
-    private BufferedImage addText(BufferedImage image, String text) throws IOException {
+    private BufferedImage addText(BufferedImage image, String text, boolean useEncryption, String password) throws IOException, Exception {
         int isCompressed = 0;
         byte[] imageBytes = this.getBufferedImageRasterBytes(image);
         byte[] textBytes = text.getBytes();
@@ -119,6 +122,14 @@ public class Steganography {
             textBytes = this.compress(textBytes);
         }
         byte[] ziped = ByteBuffer.allocate(1).put((byte)isCompressed).array();
+        if (useEncryption) {
+            byte[] encrypted = Cryptography.encrypt(textBytes, password);
+            byte[] length = ByteBuffer.allocate(4).putInt(encrypted.length).array();
+            this.hideBytes(imageBytes, length, 0);
+            this.hideBytes(imageBytes, ziped, 32);
+            this.hideBytes(imageBytes, encrypted, 40);
+            return image;
+        }
         byte[] length = ByteBuffer.allocate(4).putInt(textBytes.length).array();
         this.hideBytes(imageBytes, length, 0);
         this.hideBytes(imageBytes, ziped, 32);
@@ -132,11 +143,13 @@ public class Steganography {
      * @param in Image in which text will be added
      * @param out Image that contains hidden text
      * @param text Text to be hidden
+     * @param useEncryption Flag that indicates if the text should be encrypted
+     * @param password Password for the encryption
      * @throws IOException 
      */
-    public void hideText(File in, File out, String text) throws IOException {
+    public void hideText(File in, File out, String text, boolean useEncryption, String password) throws IOException, Exception {
         BufferedImage newImage = this.getUserSpace(ImageIO.read(in));
-        newImage = this.addText(newImage, text);
+        newImage = this.addText(newImage, text, useEncryption, password);
         ImageIO.write(newImage, "png", out);
     }
     
@@ -144,14 +157,16 @@ public class Steganography {
      * Retrieve hidden text from image
      * 
      * @param in Image with hidden text
+     * @param useEncryption
+     * @param password
      * @return Hidden text from image
      * @throws IOException 
      * @throws DataFormatException 
      */
-    public String retrieveText(File in) throws IOException, DataFormatException {
+    public String retrieveText(File in, boolean useEncryption, String password) throws IOException, DataFormatException, Exception {
         BufferedImage newImage = this.getUserSpace(ImageIO.read(in));
         byte[] imageBytes = this.getBufferedImageRasterBytes(newImage);
-        return this.getHiddenText(imageBytes);
+        return this.getHiddenText(imageBytes, useEncryption, password);
     }
     
     /**
